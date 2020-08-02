@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
             modifiers={{
               available: { daysOfWeek: [1, 2, 3, 4, 5, 6] },
             }}
-            selectedDays={electedDate}
+            selectedDays={selectedDate}
             onDayClick={handleDateChange}
             months={[
               'Janeiro',
