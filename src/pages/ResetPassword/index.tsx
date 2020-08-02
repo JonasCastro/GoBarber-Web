@@ -1,9 +1,9 @@
 import React, { useCallback, useRef } from 'react';
-import { FiLogIn, FiLock } from 'react-icons/fi';
+import { FiLock } from 'react-icons/fi';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { Container, AnimationContainer, Content, Background } from './styles';
 import logoImg from '../../assets/logo.svg';
@@ -11,6 +11,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useToast } from '../../hooks/toast';
+import api from '../../services/api';
 
 interface ResetPasswordFormData {
   password: string;
@@ -22,6 +23,7 @@ const ResetPassword: React.FC = () => {
 
   const { addToast } = useToast();
   const history = useHistory();
+  const location = useLocation();
 
   const handleSubmit = useCallback(
     async (data: ResetPasswordFormData) => {
@@ -39,8 +41,20 @@ const ResetPassword: React.FC = () => {
         await schema.validate(data, {
           abortEarly: false,
         });
+        const { password, password_confirmation } = data;
+        const token = location.search.replace('?token=', '');
 
-        history.push('/signin');
+        if (!token) {
+          throw new Error();
+        }
+
+        await api.post('/password/reset', {
+          password,
+          password_confirmation,
+          token,
+        });
+
+        history.push('/');
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
           const errors = getValidationErrors(error);
@@ -55,7 +69,7 @@ const ResetPassword: React.FC = () => {
         });
       }
     },
-    [addToast, history],
+    [addToast, history, location.search],
   );
   return (
     <Container>
@@ -78,10 +92,6 @@ const ResetPassword: React.FC = () => {
             />
             <Button type="submit">Alterar senha</Button>
           </Form>
-          <Link to="/signin">
-            <FiLogIn />
-            Voltar ao login
-          </Link>
         </AnimationContainer>
       </Content>
       <Background />
