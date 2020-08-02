@@ -66,6 +66,7 @@ const Dashboard: React.FC = () => {
               </span>
               <div>
                 <img src="" alt="Jonas Castro" />
+                <strong>Jonas Castro</strong>
               </div>
             </Appointment>
             <Appointment>
@@ -75,6 +76,7 @@ const Dashboard: React.FC = () => {
               </span>
               <div>
                 <img src="" alt="Jonas Castro" />
+                <strong>Jonas Castro</strong>
               </div>
             </Appointment>
           </Section>
@@ -87,6 +89,7 @@ const Dashboard: React.FC = () => {
               </span>
               <div>
                 <img src="" alt="Jonas Castro" />
+                <strong>Jonas Castro</strong>
               </div>
             </Appointment>
           </Section>
