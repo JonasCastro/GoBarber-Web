@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { render, fireEvent, wait } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import SignIn from '../../pages/SignIn';
 
 const mockedHistoryPush = jest.fn();
@@ -23,23 +23,36 @@ jest.mock('../../hooks/auth', () => {
 });
 
 describe('SignIn Page', () => {
+  beforeEach(() => {
+    mockedHistoryPush.mockClear();
+  });
+
   it('shuld be able to sign in', async () => {
+    const { getByPlaceholderText, getByText } = render(<SignIn />);
+    const emailField = getByPlaceholderText('E-mail');
+    const passwordField = getByPlaceholderText('Senha');
+    const buttonElement = getByText('Entrar');
+    fireEvent.change(emailField, { target: { value: 'johndoe@exemple.com' } });
+    fireEvent.change(passwordField, { target: { value: '123456' } });
+    fireEvent.click(buttonElement);
+    await waitFor(() =>
+      expect(mockedHistoryPush).toHaveBeenCalledWith('/dashboard'),
+    );
+  });
+
+  it('shuld not be able to sign in invalid creadentials', async () => {
     const { getByPlaceholderText, getByText } = render(<SignIn />);
 
     const emailField = getByPlaceholderText('E-mail');
     const passwordField = getByPlaceholderText('Senha');
+
     const buttonElement = getByText('Entrar');
 
-    fireEvent.change(emailField, { target: { value: 'johndoe@exemple.com' } });
+    fireEvent.change(emailField, { target: { value: 'not-valid-email' } });
     fireEvent.change(passwordField, { target: { value: '123456' } });
 
     fireEvent.click(buttonElement);
 
-    await wait(() =>
-      expect(mockedHistoryPush).toHaveBeenCalledWith('/dashboard'),
-    );
-    // await waitFor(() => {
-    //   expect(mockedHistoryPush).toHaveBeenCalledWith('/dashboard');
-    // });
+    await waitFor(() => expect(mockedHistoryPush).not.toHaveBeenCalled());
   });
 });
